@@ -1,6 +1,7 @@
 package com.cqut.atao.mybatis.builder;
 
 import com.cqut.atao.mybatis.session.Configuration;
+import com.cqut.atao.mybatis.type.TypeAliasRegistry;
 
 /**
  * @author atao
@@ -13,8 +14,11 @@ public abstract class BaseBuilder {
 
     protected final Configuration configuration;
 
+    protected final TypeAliasRegistry typeAliasRegistry;
+
     public BaseBuilder(Configuration configuration) {
         this.configuration = configuration;
+        this.typeAliasRegistry = this.configuration.getTypeAliasRegistry();
     }
 
     public Configuration getConfiguration() {
