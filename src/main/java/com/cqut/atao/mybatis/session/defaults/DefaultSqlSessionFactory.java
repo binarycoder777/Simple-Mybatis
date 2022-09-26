@@ -1,6 +1,5 @@
 package com.cqut.atao.mybatis.session.defaults;
 
-import com.cqut.atao.mybatis.binding.MapperRegistry;
 import com.cqut.atao.mybatis.session.Configuration;
 import com.cqut.atao.mybatis.session.SqlSession;
 import com.cqut.atao.mybatis.session.SqlSessionFactory;

@@ -23,5 +23,4 @@ public class SqlSessionFactoryBuilder {
         return new DefaultSqlSessionFactory(config);
     }
 
-
 }
