@@ -2,6 +2,8 @@ package com.cqut.atao.mybatis.session;
 
 import com.cqut.atao.mybatis.binding.MapperRegistry;
 import com.cqut.atao.mybatis.datasource.druid.DruidDataSourceFactory;
+import com.cqut.atao.mybatis.datasource.pooled.PooledDataSourceFactory;
+import com.cqut.atao.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import com.cqut.atao.mybatis.mapping.Environment;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
 import com.cqut.atao.mybatis.transaction.jdbc.JdbcTransactionFactory;
@@ -19,7 +21,9 @@ import java.util.Map;
  */
 public class Configuration {
 
-    //环境
+    /**
+     * 环境
+     */
     protected Environment environment;
 
     /**
@@ -32,12 +36,16 @@ public class Configuration {
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
 
-    // 类型别名注册机
+    /**
+     * 类型别名注册机
+     */
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
     }
 
     public void addMappers(String packageName) {
