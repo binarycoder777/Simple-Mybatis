@@ -4,10 +4,19 @@ import com.cqut.atao.mybatis.binding.MapperRegistry;
 import com.cqut.atao.mybatis.datasource.druid.DruidDataSourceFactory;
 import com.cqut.atao.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.cqut.atao.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
+import com.cqut.atao.mybatis.executor.Executor;
+import com.cqut.atao.mybatis.executor.SimpleExecutor;
+import com.cqut.atao.mybatis.executor.resultset.DefaultResultSetHandler;
+import com.cqut.atao.mybatis.executor.resultset.ResultSetHandler;
+import com.cqut.atao.mybatis.executor.statement.PreparedStatementHandler;
+import com.cqut.atao.mybatis.executor.statement.StatementHandler;
+import com.cqut.atao.mybatis.mapping.BoundSql;
 import com.cqut.atao.mybatis.mapping.Environment;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
+import com.cqut.atao.mybatis.transaction.Transaction;
 import com.cqut.atao.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.cqut.atao.mybatis.type.TypeAliasRegistry;
+import sun.plugin2.main.server.ResultHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,4 +92,27 @@ public class Configuration {
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }
+
+    /**
+     * 创建结果集处理器
+     */
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
+        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
+    }
+
+    /**
+     * 生产执行器
+     */
+    public Executor newExecutor(Transaction transaction) {
+        return new SimpleExecutor(this, transaction);
+    }
+
+    /**
+     * 创建语句处理器
+     */
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(executor, mappedStatement, parameter, resultHandler, boundSql);
+    }
+
+
 }

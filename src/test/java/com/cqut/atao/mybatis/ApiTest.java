@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.Reader;
 
 /**
  * @author atao
@@ -42,20 +41,5 @@ public class ApiTest {
         logger.info("测试结果：{}", JSON.toJSONString(user));
     }
 
-    @Test
-    public void test_selectOne() throws IOException {
-        // 解析 XML
-        Reader reader = Resources.getResourceAsReader("mybatis-config-datasource.xml");
-        XMLConfigBuilder xmlConfigBuilder = new XMLConfigBuilder(reader);
-        Configuration configuration = xmlConfigBuilder.parse();
-
-        // 获取 DefaultSqlSession
-        SqlSession sqlSession = new DefaultSqlSession(configuration);
-
-        // 执行查询：默认是一个集合参数
-        Object[] req = {1L};
-        Object res = sqlSession.selectOne("com.cqut.atao.mybatis.dao.IUserDao.queryUserInfoById", req);
-        logger.info("测试结果：{}", JSON.toJSONString(res));
-    }
 
 }

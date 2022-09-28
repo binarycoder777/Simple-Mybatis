@@ -1,8 +1,15 @@
 package com.cqut.atao.mybatis.session.defaults;
 
+import com.cqut.atao.mybatis.executor.Executor;
+import com.cqut.atao.mybatis.mapping.Environment;
 import com.cqut.atao.mybatis.session.Configuration;
 import com.cqut.atao.mybatis.session.SqlSession;
 import com.cqut.atao.mybatis.session.SqlSessionFactory;
+import com.cqut.atao.mybatis.transaction.Transaction;
+import com.cqut.atao.mybatis.transaction.TransactionFactory;
+import com.cqut.atao.mybatis.transaction.TransactionIsolationLevel;
+
+import java.sql.SQLException;
 
 /**
  * @author atao
@@ -21,7 +28,24 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
     @Override
     public SqlSession openSession() {
-        return new DefaultSqlSession(configuration);
+        Transaction tx = null;
+        try {
+            final Environment environment = configuration.getEnvironment();
+            TransactionFactory transactionFactory = environment.getTransactionFactory();
+            tx = transactionFactory.newTransaction(configuration.getEnvironment().getDataSource(), TransactionIsolationLevel.READ_COMMITTED, false);
+            // 创建执行器
+            final Executor executor = configuration.newExecutor(tx);
+            // 创建DefaultSqlSession
+            return new DefaultSqlSession(configuration, executor);
+        } catch (Exception e) {
+            try {
+                assert tx != null;
+                tx.close();
+            } catch (SQLException ignore) {
+
+            }
+            throw new RuntimeException("Error opening session.  Cause: " + e);
+        }
     }
 
 }
