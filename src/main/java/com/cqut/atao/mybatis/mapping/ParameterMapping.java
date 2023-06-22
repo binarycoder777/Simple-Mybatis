@@ -2,6 +2,8 @@ package com.cqut.atao.mybatis.mapping;
 
 import com.cqut.atao.mybatis.session.Configuration;
 import com.cqut.atao.mybatis.type.JdbcType;
+import com.cqut.atao.mybatis.type.TypeHandler;
+import com.cqut.atao.mybatis.type.TypeHandlerRegistry;
 
 /**
  * @author atao
@@ -11,6 +13,8 @@ import com.cqut.atao.mybatis.type.JdbcType;
  * @createTime 2023年06月21日 18:04:00
  */
 public class ParameterMapping {
+
+
     private Configuration configuration;
 
     // property
@@ -19,6 +23,7 @@ public class ParameterMapping {
     private Class<?> javaType = Object.class;
     // jdbcType=NUMERIC
     private JdbcType jdbcType;
+    private TypeHandler<?> typeHandler;
 
     private ParameterMapping() {
     }
@@ -44,8 +49,15 @@ public class ParameterMapping {
         }
 
         public ParameterMapping build() {
+            if (parameterMapping.typeHandler == null && parameterMapping.javaType != null) {
+                Configuration configuration = parameterMapping.configuration;
+                TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+                parameterMapping.typeHandler = typeHandlerRegistry.getTypeHandler(parameterMapping.javaType, parameterMapping.jdbcType);
+            }
+
             return parameterMapping;
         }
+
     }
 
     public Configuration getConfiguration() {
@@ -62,6 +74,10 @@ public class ParameterMapping {
 
     public JdbcType getJdbcType() {
         return jdbcType;
+    }
+
+    public TypeHandler<?> getTypeHandler() {
+        return typeHandler;
     }
 
 }

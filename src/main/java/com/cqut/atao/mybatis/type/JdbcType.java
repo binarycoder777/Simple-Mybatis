@@ -13,29 +13,12 @@ import java.util.Map;
  */
 public enum JdbcType {
 
-    /**
-     * int
-     */
     INTEGER(Types.INTEGER),
-    /**
-     * float
-     */
     FLOAT(Types.FLOAT),
-    /**
-     * double
-     */
     DOUBLE(Types.DOUBLE),
-    /**
-     * decimal
-     */
     DECIMAL(Types.DECIMAL),
-    /**
-     * varchar
-     */
     VARCHAR(Types.VARCHAR),
-    /**
-     * timestamp
-     */
+    CHAR(Types.CHAR),
     TIMESTAMP(Types.TIMESTAMP);
 
     public final int TYPE_CODE;

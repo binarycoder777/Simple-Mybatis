@@ -1,6 +1,7 @@
 package com.cqut.atao.mybatis.executor.statement;
 
 import com.cqut.atao.mybatis.executor.Executor;
+import com.cqut.atao.mybatis.executor.parameter.ParameterHandler;
 import com.cqut.atao.mybatis.executor.resultset.ResultSetHandler;
 import com.cqut.atao.mybatis.mapping.BoundSql;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
@@ -19,13 +20,13 @@ import java.sql.Statement;
  * @createTime 2022年09月28日 09:49:00
  */
 public abstract class BaseStatementHandler implements StatementHandler {
-
     protected final Configuration configuration;
     protected final Executor executor;
     protected final MappedStatement mappedStatement;
 
     protected final Object parameterObject;
     protected final ResultSetHandler resultSetHandler;
+    protected final ParameterHandler parameterHandler;
 
     protected BoundSql boundSql;
 
@@ -36,6 +37,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
         this.boundSql = boundSql;
 
         this.parameterObject = parameterObject;
+        this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
         this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, boundSql);
     }
 

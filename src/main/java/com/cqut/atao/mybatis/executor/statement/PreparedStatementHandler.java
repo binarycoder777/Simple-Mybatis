@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class PreparedStatementHandler extends BaseStatementHandler{
 
+
     public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, ResultHandler resultHandler, BoundSql boundSql) {
         super(executor, mappedStatement, parameterObject, resultHandler, boundSql);
     }
@@ -32,8 +33,7 @@ public class PreparedStatementHandler extends BaseStatementHandler{
 
     @Override
     public void parameterize(Statement statement) throws SQLException {
-        PreparedStatement ps = (PreparedStatement) statement;
-        ps.setLong(1, Long.parseLong(((Object[]) parameterObject)[0].toString()));
+        parameterHandler.setParameters((PreparedStatement) statement);
     }
 
     @Override
@@ -44,4 +44,3 @@ public class PreparedStatementHandler extends BaseStatementHandler{
     }
 
 }
-
