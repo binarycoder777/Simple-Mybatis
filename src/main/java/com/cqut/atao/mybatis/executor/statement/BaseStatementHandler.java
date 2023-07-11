@@ -2,11 +2,13 @@ package com.cqut.atao.mybatis.executor.statement;
 
 import com.cqut.atao.mybatis.executor.Executor;
 import com.cqut.atao.mybatis.executor.parameter.ParameterHandler;
-import com.cqut.atao.mybatis.executor.resultset.ResultSetHandler;
+import com.cqut.atao.mybatis.executor.result.ResultSetHandler;
 import com.cqut.atao.mybatis.mapping.BoundSql;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
 import com.cqut.atao.mybatis.session.Configuration;
-import sun.plugin2.main.server.ResultHandler;
+import com.cqut.atao.mybatis.session.ResultHandler;
+import com.cqut.atao.mybatis.session.RowBounds;
+
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,18 +30,22 @@ public abstract class BaseStatementHandler implements StatementHandler {
     protected final ResultSetHandler resultSetHandler;
     protected final ParameterHandler parameterHandler;
 
+    protected final RowBounds rowBounds;
+
     protected BoundSql boundSql;
 
-    public BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, ResultHandler resultHandler, BoundSql boundSql) {
+    public BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         this.configuration = mappedStatement.getConfiguration();
         this.executor = executor;
         this.mappedStatement = mappedStatement;
+        this.rowBounds = rowBounds;
         this.boundSql = boundSql;
 
         this.parameterObject = parameterObject;
         this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
-        this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, boundSql);
+        this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, resultHandler, boundSql);
     }
+
 
     @Override
     public Statement prepare(Connection connection) throws SQLException {

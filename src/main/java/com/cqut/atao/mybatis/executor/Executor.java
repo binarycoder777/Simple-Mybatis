@@ -2,8 +2,10 @@ package com.cqut.atao.mybatis.executor;
 
 import com.cqut.atao.mybatis.mapping.BoundSql;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
+import com.cqut.atao.mybatis.session.ResultHandler;
+import com.cqut.atao.mybatis.session.RowBounds;
 import com.cqut.atao.mybatis.transaction.Transaction;
-import sun.plugin2.main.server.ResultHandler;
+
 
 import java.sql.SQLException;
 import java.util.List;
@@ -19,7 +21,7 @@ public interface Executor {
 
     ResultHandler NO_RESULT_HANDLER = null;
 
-    <E> List<E> query(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql);
+    <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     Transaction getTransaction();
 

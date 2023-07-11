@@ -8,4 +8,11 @@
         where id = #{id}
     </select>
 
+    <select id="queryUserInfo" parameterType="com.cqut.atao.mybatis.po.User" resultType="com.cqut.atao.mybatis.po.User">
+        SELECT id, userId, userName, userHead
+        FROM user
+        where id = #{id} and userId = #{userId}
+    </select>
+
+
 </mapper>

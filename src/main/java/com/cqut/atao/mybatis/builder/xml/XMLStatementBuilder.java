@@ -1,6 +1,7 @@
 package com.cqut.atao.mybatis.builder.xml;
 
 import com.cqut.atao.mybatis.builder.BaseBuilder;
+import com.cqut.atao.mybatis.builder.MapperBuilderAssistant;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
 import com.cqut.atao.mybatis.mapping.SqlCommandType;
 import com.cqut.atao.mybatis.mapping.SqlSource;
@@ -19,13 +20,13 @@ import java.util.Locale;
  */
 public class XMLStatementBuilder extends BaseBuilder {
 
-    private String currentNamespace;
+    private MapperBuilderAssistant builderAssistant;
     private Element element;
 
-    public XMLStatementBuilder(Configuration configuration, Element element, String currentNamespace) {
+    public XMLStatementBuilder(Configuration configuration, MapperBuilderAssistant builderAssistant, Element element) {
         super(configuration);
+        this.builderAssistant = builderAssistant;
         this.element = element;
-        this.currentNamespace = currentNamespace;
     }
 
     //解析语句(select|insert|update|delete)
@@ -48,6 +49,8 @@ public class XMLStatementBuilder extends BaseBuilder {
         // 参数类型
         String parameterType = element.attributeValue("parameterType");
         Class<?> parameterTypeClass = resolveAlias(parameterType);
+        // 外部应用 resultMap
+        String resultMap = element.attributeValue("resultMap");
         // 结果类型
         String resultType = element.attributeValue("resultType");
         Class<?> resultTypeClass = resolveAlias(resultType);
@@ -61,10 +64,14 @@ public class XMLStatementBuilder extends BaseBuilder {
 
         SqlSource sqlSource = langDriver.createSqlSource(configuration, element, parameterTypeClass);
 
-        MappedStatement mappedStatement = new MappedStatement.Builder(configuration, currentNamespace + "." + id, sqlCommandType, sqlSource, resultTypeClass).build();
-
-        // 添加解析 SQL
-        configuration.addMappedStatement(mappedStatement);
+        // 调用助手类【本节新添加，便于统一处理参数的包装】
+        builderAssistant.addMappedStatement(id,
+                sqlSource,
+                sqlCommandType,
+                parameterTypeClass,
+                resultMap,
+                resultTypeClass,
+                langDriver);
     }
 
 }

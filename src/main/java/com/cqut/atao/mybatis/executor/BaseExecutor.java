@@ -3,9 +3,11 @@ package com.cqut.atao.mybatis.executor;
 import com.cqut.atao.mybatis.mapping.BoundSql;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
 import com.cqut.atao.mybatis.session.Configuration;
+import com.cqut.atao.mybatis.session.ResultHandler;
+import com.cqut.atao.mybatis.session.RowBounds;
 import com.cqut.atao.mybatis.transaction.Transaction;
 import org.slf4j.LoggerFactory;
-import sun.plugin2.main.server.ResultHandler;
+
 
 import java.sql.SQLException;
 import java.util.List;
@@ -34,14 +36,14 @@ public abstract class BaseExecutor implements Executor {
     }
 
     @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         if (closed) {
             throw new RuntimeException("Executor was closed.");
         }
-        return doQuery(ms, parameter, resultHandler, boundSql);
+        return doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     }
 
-    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, ResultHandler resultHandler, BoundSql boundSql);
+    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     @Override
     public Transaction getTransaction() {

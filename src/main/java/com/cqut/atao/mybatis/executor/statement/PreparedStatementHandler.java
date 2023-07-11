@@ -3,7 +3,8 @@ package com.cqut.atao.mybatis.executor.statement;
 import com.cqut.atao.mybatis.executor.Executor;
 import com.cqut.atao.mybatis.mapping.BoundSql;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
-import sun.plugin2.main.server.ResultHandler;
+import com.cqut.atao.mybatis.session.ResultHandler;
+import com.cqut.atao.mybatis.session.RowBounds;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,9 +21,8 @@ import java.util.List;
  */
 public class PreparedStatementHandler extends BaseStatementHandler{
 
-
-    public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, ResultHandler resultHandler, BoundSql boundSql) {
-        super(executor, mappedStatement, parameterObject, resultHandler, boundSql);
+    public PreparedStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds,  ResultHandler resultHandler, BoundSql boundSql) {
+        super(executor, mappedStatement, parameterObject, rowBounds, resultHandler, boundSql);
     }
 
     @Override

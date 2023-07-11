@@ -1,4 +1,5 @@
-package com.cqut.atao.mybatis.executor.resultset;
+
+package com.cqut.atao.mybatis.executor.result;
 
 import java.sql.SQLException;
 import java.sql.Statement;

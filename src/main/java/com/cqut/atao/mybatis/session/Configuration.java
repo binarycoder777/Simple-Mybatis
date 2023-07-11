@@ -7,8 +7,8 @@ import com.cqut.atao.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import com.cqut.atao.mybatis.executor.Executor;
 import com.cqut.atao.mybatis.executor.SimpleExecutor;
 import com.cqut.atao.mybatis.executor.parameter.ParameterHandler;
-import com.cqut.atao.mybatis.executor.resultset.DefaultResultSetHandler;
-import com.cqut.atao.mybatis.executor.resultset.ResultSetHandler;
+import com.cqut.atao.mybatis.executor.result.DefaultResultSetHandler;
+import com.cqut.atao.mybatis.executor.result.ResultSetHandler;
 import com.cqut.atao.mybatis.executor.statement.PreparedStatementHandler;
 import com.cqut.atao.mybatis.executor.statement.StatementHandler;
 import com.cqut.atao.mybatis.mapping.BoundSql;
@@ -26,7 +26,7 @@ import com.cqut.atao.mybatis.transaction.Transaction;
 import com.cqut.atao.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.cqut.atao.mybatis.type.TypeAliasRegistry;
 import com.cqut.atao.mybatis.type.TypeHandlerRegistry;
-import sun.plugin2.main.server.ResultHandler;
+
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -114,12 +114,11 @@ public class Configuration {
     public String getDatabaseId() {
         return databaseId;
     }
-
     /**
      * 创建结果集处理器
      */
-    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
-        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+        return new DefaultResultSetHandler(executor, mappedStatement, resultHandler, rowBounds, boundSql);
     }
 
     /**
@@ -132,9 +131,10 @@ public class Configuration {
     /**
      * 创建语句处理器
      */
-    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, ResultHandler resultHandler, BoundSql boundSql) {
-        return new PreparedStatementHandler(executor, mappedStatement, parameter, resultHandler, boundSql);
+    public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
+        return new PreparedStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
     }
+
 
     // 创建元对象
     public MetaObject newMetaObject(Object object) {
@@ -169,4 +169,7 @@ public class Configuration {
         return languageRegistry.getDefaultDriver();
     }
 
+    public ObjectFactory getObjectFactory() {
+        return objectFactory;
+    }
 }
