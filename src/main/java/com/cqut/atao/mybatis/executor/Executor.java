@@ -21,6 +21,8 @@ public interface Executor {
 
     ResultHandler NO_RESULT_HANDLER = null;
 
+    int update(MappedStatement ms, Object parameter) throws SQLException;
+
     <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
 
     Transaction getTransaction();

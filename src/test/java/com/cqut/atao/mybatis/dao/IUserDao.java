@@ -2,6 +2,8 @@ package com.cqut.atao.mybatis.dao;
 
 import com.cqut.atao.mybatis.po.User;
 
+import java.util.List;
+
 /**
  * @author atao
  * @version 1.0.0
@@ -14,5 +16,14 @@ public interface IUserDao {
     User queryUserInfoById(Long uId);
 
     User queryUserInfo(User req);
+
+
+    List<User> queryUserInfoList();
+
+    int updateUserInfo(User req);
+
+    void insertUserInfo(User req);
+
+    int deleteUserInfoByUserId(String userId);
 
 }
