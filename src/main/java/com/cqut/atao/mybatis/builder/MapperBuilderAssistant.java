@@ -1,8 +1,10 @@
 package com.cqut.atao.mybatis.builder;
 
 import com.cqut.atao.mybatis.mapping.*;
+import com.cqut.atao.mybatis.reflection.MetaClass;
 import com.cqut.atao.mybatis.scripting.LanguageDriver;
 import com.cqut.atao.mybatis.session.Configuration;
+import com.cqut.atao.mybatis.type.TypeHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,41 @@ public class MapperBuilderAssistant extends BaseBuilder {
         super(configuration);
         this.resource = resource;
     }
+
+
+    // step-13 新增方法
+    public ResultMapping buildResultMapping(
+            Class<?> resultType,
+            String property,
+            String column,
+            List<ResultFlag> flags) {
+
+        Class<?> javaTypeClass = resolveResultJavaType(resultType, property, null);
+        TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, null);
+
+        ResultMapping.Builder builder = new ResultMapping.Builder(configuration, property, column, javaTypeClass);
+        builder.typeHandler(typeHandlerInstance);
+        builder.flags(flags);
+
+        return builder.build();
+
+    }
+
+
+    private Class<?> resolveResultJavaType(Class<?> resultType, String property, Class<?> javaType) {
+        if (javaType == null && property != null) {
+            try {
+                MetaClass metaResultType = MetaClass.forClass(resultType);
+                javaType = metaResultType.getSetterType(property);
+            } catch (Exception ignore) {
+            }
+        }
+        if (javaType == null) {
+            javaType = Object.class;
+        }
+        return javaType;
+    }
+
 
     public String getCurrentNamespace() {
         return currentNamespace;
