@@ -1,9 +1,6 @@
 package com.cqut.atao.mybatis.builder;
 
-import com.cqut.atao.mybatis.mapping.MappedStatement;
-import com.cqut.atao.mybatis.mapping.ResultMap;
-import com.cqut.atao.mybatis.mapping.SqlCommandType;
-import com.cqut.atao.mybatis.mapping.SqlSource;
+import com.cqut.atao.mybatis.mapping.*;
 import com.cqut.atao.mybatis.scripting.LanguageDriver;
 import com.cqut.atao.mybatis.session.Configuration;
 
@@ -34,7 +31,15 @@ public class MapperBuilderAssistant extends BaseBuilder {
         }
         if (isReference) {
             if (base.contains(".")) return base;
+        } else {
+            if (base.startsWith(currentNamespace + ".")) {
+                return base;
+            }
+            if (base.contains(".")) {
+                throw new RuntimeException("Dots are not allowed in element names, please remove it from " + base);
+            }
         }
+
         return currentNamespace + "." + base;
     }
 
@@ -90,6 +95,18 @@ public class MapperBuilderAssistant extends BaseBuilder {
             resultMaps.add(inlineResultMapBuilder.build());
         }
         statementBuilder.resultMaps(resultMaps);
+    }
+
+    public ResultMap addResultMap(String id, Class<?> type, List<ResultMapping> resultMappings) {
+        ResultMap.Builder inlineResultMapBuilder = new ResultMap.Builder(
+                configuration,
+                id,
+                type,
+                resultMappings);
+
+        ResultMap resultMap = inlineResultMapBuilder.build();
+        configuration.addResultMap(resultMap);
+        return resultMap;
     }
 
 }

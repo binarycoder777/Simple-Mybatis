@@ -1,5 +1,7 @@
 package com.cqut.atao.mybatis.dao;
 
+import com.cqut.atao.mybatis.annotations.Insert;
+import com.cqut.atao.mybatis.annotations.Select;
 import com.cqut.atao.mybatis.po.User;
 
 import java.util.List;
@@ -13,17 +15,26 @@ import java.util.List;
  */
 public interface IUserDao {
 
-    User queryUserInfoById(Long uId);
-
     User queryUserInfo(User req);
 
 
-    List<User> queryUserInfoList();
+//    List<User> queryUserInfoList();
 
     int updateUserInfo(User req);
 
     void insertUserInfo(User req);
 
     int deleteUserInfoByUserId(String userId);
+
+
+    @Select("SELECT id, userId, userName, userHead\n" +
+            "FROM user\n" +
+            "where id = #{id}")
+    User queryUserInfoById(Long id);
+
+    @Select("SELECT id, userId, userName, userHead\n" +
+            "FROM user")
+    List<User> queryUserInfoList();
+
 
 }

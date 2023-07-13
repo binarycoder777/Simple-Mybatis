@@ -14,6 +14,7 @@ import com.cqut.atao.mybatis.executor.statement.StatementHandler;
 import com.cqut.atao.mybatis.mapping.BoundSql;
 import com.cqut.atao.mybatis.mapping.Environment;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
+import com.cqut.atao.mybatis.mapping.ResultMap;
 import com.cqut.atao.mybatis.reflection.MetaObject;
 import com.cqut.atao.mybatis.reflection.factory.DefaultObjectFactory;
 import com.cqut.atao.mybatis.reflection.factory.ObjectFactory;
@@ -41,6 +42,7 @@ import java.util.Set;
  * @createTime 2022年09月24日 23:26:00
  */
 public class Configuration {
+
     //环境
     protected Environment environment;
 
@@ -49,6 +51,8 @@ public class Configuration {
 
     // 映射的语句，存在Map里
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
+    // 结果映射，存在Map里
+    protected final Map<String, ResultMap> resultMaps = new HashMap<>();
 
     // 类型别名注册机
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
@@ -114,6 +118,7 @@ public class Configuration {
     public String getDatabaseId() {
         return databaseId;
     }
+
     /**
      * 创建结果集处理器
      */
@@ -134,7 +139,6 @@ public class Configuration {
     public StatementHandler newStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
         return new PreparedStatementHandler(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
     }
-
 
     // 创建元对象
     public MetaObject newMetaObject(Object object) {
@@ -172,4 +176,13 @@ public class Configuration {
     public ObjectFactory getObjectFactory() {
         return objectFactory;
     }
+
+    public ResultMap getResultMap(String id) {
+        return resultMaps.get(id);
+    }
+
+    public void addResultMap(ResultMap resultMap) {
+        resultMaps.put(resultMap.getId(), resultMap);
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.cqut.atao.mybatis.binding;
 
 import cn.hutool.core.lang.ClassScanner;
+import com.cqut.atao.mybatis.builder.annotation.MapperAnnotationBuilder;
 import com.cqut.atao.mybatis.session.Configuration;
 import com.cqut.atao.mybatis.session.SqlSession;
 
@@ -49,6 +50,9 @@ public class MapperRegistry {
             }
             // 注册映射器代理工厂
             knownMappers.put(type, new MapperProxyFactory<>(type));
+            // 解析注解类语句配置
+            MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+            parser.parse();
         }
     }
 
