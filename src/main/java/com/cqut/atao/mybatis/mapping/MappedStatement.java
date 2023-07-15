@@ -1,10 +1,10 @@
 package com.cqut.atao.mybatis.mapping;
 
+import com.cqut.atao.mybatis.executor.keygen.KeyGenerator;
 import com.cqut.atao.mybatis.scripting.LanguageDriver;
 import com.cqut.atao.mybatis.session.Configuration;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author atao
@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public class MappedStatement {
 
+    private String resource;
     private Configuration configuration;
     private String id;
     private SqlCommandType sqlCommandType;
@@ -23,6 +24,10 @@ public class MappedStatement {
     private LanguageDriver lang;
 
     private List<ResultMap> resultMaps;
+
+    private KeyGenerator keyGenerator;
+    private String[] keyProperties;
+    private String[] keyColumns;
 
     MappedStatement() {
         // constructor disabled
@@ -59,6 +64,11 @@ public class MappedStatement {
             return mappedStatement;
         }
 
+        public Builder resource(String resource) {
+            mappedStatement.resource = resource;
+            return this;
+        }
+
         public String id() {
             return mappedStatement.id;
         }
@@ -68,6 +78,24 @@ public class MappedStatement {
             return this;
         }
 
+        public Builder keyGenerator(KeyGenerator keyGenerator) {
+            mappedStatement.keyGenerator = keyGenerator;
+            return this;
+        }
+
+        public Builder keyProperty(String keyProperty) {
+            mappedStatement.keyProperties = delimitedStringToArray(keyProperty);
+            return this;
+        }
+
+    }
+
+    private static String[] delimitedStringToArray(String in) {
+        if (in == null || in.trim().length() == 0) {
+            return null;
+        } else {
+            return in.split(",");
+        }
     }
 
     public Configuration getConfiguration() {
@@ -94,8 +122,25 @@ public class MappedStatement {
         return lang;
     }
 
+
     public List<ResultMap> getResultMaps() {
         return resultMaps;
+    }
+
+    public String[] getKeyColumns() {
+        return keyColumns;
+    }
+
+    public String[] getKeyProperties() {
+        return keyProperties;
+    }
+
+    public KeyGenerator getKeyGenerator() {
+        return keyGenerator;
+    }
+
+    public String getResource() {
+        return resource;
     }
 
 }
