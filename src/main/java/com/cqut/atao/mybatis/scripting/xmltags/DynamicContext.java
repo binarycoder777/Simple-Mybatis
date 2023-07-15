@@ -18,6 +18,7 @@ import java.util.Map;
  * @createTime 2023年06月21日 16:53:00
  */
 public class DynamicContext {
+
     public static final String PARAMETER_OBJECT_KEY = "_parameter";
     public static final String DATABASE_ID_KEY = "_databaseId";
 
@@ -78,7 +79,6 @@ public class DynamicContext {
         private static final long serialVersionUID = 2977601501966151582L;
 
         private MetaObject parameterMetaObject;
-
         public ContextMap(MetaObject parameterMetaObject) {
             this.parameterMetaObject = parameterMetaObject;
         }
@@ -92,7 +92,7 @@ public class DynamicContext {
             }
 
             // 如果没找到，再用ognl表达式去取值
-            // 如person[0].birthdate.year
+            // school[0].class.user
             if (parameterMetaObject != null) {
                 // issue #61 do not modify the context when reading
                 return parameterMetaObject.getValue(strKey);
@@ -117,7 +117,7 @@ public class DynamicContext {
 
             Object parameterObject = map.get(PARAMETER_OBJECT_KEY);
             if (parameterObject instanceof Map) {
-                return ((Map) parameterObject).get(name);
+                return ((Map)parameterObject).get(name);
             }
 
             return null;
@@ -140,5 +140,6 @@ public class DynamicContext {
             return null;
         }
     }
+
 }
 
