@@ -29,6 +29,8 @@ public class MappedStatement {
     private String[] keyProperties;
     private String[] keyColumns;
 
+    private boolean flushCacheRequired;
+
     MappedStatement() {
         // constructor disabled
     }
@@ -143,4 +145,7 @@ public class MappedStatement {
         return resource;
     }
 
+    public boolean isFlushCacheRequired() {
+        return flushCacheRequired;
+    }
 }

@@ -48,6 +48,8 @@ public class Configuration {
     //环境
     protected Environment environment;
 
+    protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
+
     protected boolean useGeneratedKeys = false;
 
     // 映射注册机
@@ -219,6 +221,15 @@ public class Configuration {
     public void addInterceptor(Interceptor interceptorInstance) {
         interceptorChain.addInterceptor(interceptorInstance);
     }
+
+    public LocalCacheScope getLocalCacheScope() {
+        return localCacheScope;
+    }
+
+    public void setLocalCacheScope(LocalCacheScope localCacheScope) {
+        this.localCacheScope = localCacheScope;
+    }
+
 
 
 }

@@ -44,7 +44,6 @@ public interface SqlSession {
      */
     <E> List<E> selectList(String statement, Object parameter);
 
-
     /**
      * Execute an insert statement with the given parameter object. Any generated
      * autoincrement values or selectKey entries will modify the given parameter
@@ -77,7 +76,6 @@ public interface SqlSession {
      */
     Object delete(String statement, Object parameter);
 
-
     /**
      * 以下是事务控制方法 commit,rollback
      * Flushes batch statements and commits database connection.
@@ -85,10 +83,20 @@ public interface SqlSession {
      */
     void commit();
 
+    /**
+     * 关闭Session
+     */
+    void close();
+
+    /**
+     * 清理 Session 缓存
+     */
+    void clearCache();
 
     /**
      * Retrieves current configuration
      * 得到配置
+     *
      * @return Configuration
      */
     Configuration getConfiguration();
@@ -102,5 +110,6 @@ public interface SqlSession {
      * @return a mapper bound to this SqlSession
      */
     <T> T getMapper(Class<T> type);
+
 
 }

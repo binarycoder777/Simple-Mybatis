@@ -3,8 +3,6 @@ package com.cqut.atao.mybatis.session.defaults;
 
 import com.alibaba.fastjson.JSON;
 import com.cqut.atao.mybatis.executor.Executor;
-import com.cqut.atao.mybatis.mapping.BoundSql;
-import com.cqut.atao.mybatis.mapping.Environment;
 import com.cqut.atao.mybatis.mapping.MappedStatement;
 import com.cqut.atao.mybatis.session.Configuration;
 import com.cqut.atao.mybatis.session.RowBounds;
@@ -12,9 +10,7 @@ import com.cqut.atao.mybatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -58,7 +54,11 @@ public class DefaultSqlSession implements SqlSession {
     public <E> List<E> selectList(String statement, Object parameter) {
         logger.info("执行查询 statement：{} parameter：{}", statement, JSON.toJSONString(parameter));
         MappedStatement ms = configuration.getMappedStatement(statement);
-        return executor.query(ms, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER, ms.getSqlSource().getBoundSql(parameter));
+        try {
+            return executor.query(ms, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error querying database.  Cause: " + e);
+        }
     }
 
     @Override
@@ -93,7 +93,6 @@ public class DefaultSqlSession implements SqlSession {
     }
 
 
-
     @Override
     public <T> T getMapper(Class<T> type) {
         return configuration.getMapper(type, this);
@@ -104,4 +103,16 @@ public class DefaultSqlSession implements SqlSession {
         return configuration;
     }
 
+
+    @Override
+    public void close() {
+        executor.close(true);
+    }
+
+    @Override
+    public void clearCache() {
+        executor.clearLocalCache();
+    }
+
 }
+

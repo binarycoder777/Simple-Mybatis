@@ -6,6 +6,7 @@ import com.cqut.atao.mybatis.io.Resources;
 import com.cqut.atao.mybatis.mapping.Environment;
 import com.cqut.atao.mybatis.plugin.Interceptor;
 import com.cqut.atao.mybatis.session.Configuration;
+import com.cqut.atao.mybatis.session.LocalCacheScope;
 import com.cqut.atao.mybatis.transaction.TransactionFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -52,6 +53,8 @@ public class XMLConfigBuilder extends BaseBuilder {
         try {
             // 插件 step-16 添加
             pluginElement(root.element("plugins"));
+            // 设置
+            settingsElement(root.element("settings"));
             // 环境
             environmentsElement(root.element("environments"));
             // 解析映射器
@@ -88,6 +91,23 @@ public class XMLConfigBuilder extends BaseBuilder {
             configuration.addInterceptor(interceptorInstance);
         }
     }
+
+    /**
+     * <settings>
+     *     <!--缓存级别：SESSION/STATEMENT-->
+     *     <setting name="localCacheScope" value="SESSION"/>
+     * </settings>
+     */
+    private void settingsElement(Element context) {
+        if (context == null) return;
+        List<Element> elements = context.elements();
+        Properties props = new Properties();
+        for (Element element : elements) {
+            props.setProperty(element.attributeValue("name"), element.attributeValue("value"));
+        }
+        configuration.setLocalCacheScope(LocalCacheScope.valueOf(props.getProperty("localCacheScope")));
+    }
+
 
 
     /**
