@@ -36,8 +36,8 @@ public abstract class BaseExecutor implements Executor {
 
     // 本地缓存
     protected PerpetualCache localCache;
-    private boolean closed;
 
+    private boolean closed;
     // 查询堆栈
     protected int queryStack = 0;
 
@@ -57,9 +57,14 @@ public abstract class BaseExecutor implements Executor {
         return doUpdate(ms, parameter);
     }
 
-    protected abstract int doUpdate(MappedStatement ms, Object parameter) throws SQLException;
-
-
+    @Override
+    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+        // 1. 获取绑定SQL
+        BoundSql boundSql = ms.getBoundSql(parameter);
+        // 2. 创建缓存Key
+        CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
+        return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
+    }
 
     @Override
     public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
@@ -89,13 +94,6 @@ public abstract class BaseExecutor implements Executor {
         return list;
     }
 
-    @Override
-    public void clearLocalCache() {
-        if (!closed) {
-            localCache.clear();
-        }
-    }
-
     private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
         List<E> list;
         localCache.putObject(key, ExecutionPlaceholder.EXECUTION_PLACEHOLDER);
@@ -109,17 +107,9 @@ public abstract class BaseExecutor implements Executor {
         return list;
     }
 
-    @Override
-    public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
-        // 1. 获取绑定SQL
-        BoundSql boundSql = ms.getBoundSql(parameter);
-        // 2. 创建缓存Key
-        CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
-        return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
-    }
+    protected abstract int doUpdate(MappedStatement ms, Object parameter) throws SQLException;
 
-
-    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql);
+    protected abstract <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException;
 
     @Override
     public Transaction getTransaction() {
@@ -154,27 +144,9 @@ public abstract class BaseExecutor implements Executor {
     }
 
     @Override
-    public void close(boolean forceRollback) {
-        try {
-            try {
-                rollback(forceRollback);
-            } finally {
-                transaction.close();
-            }
-        } catch (SQLException e) {
-            logger.warn("Unexpected exception on closing transaction.  Cause: " + e);
-        } finally {
-            transaction = null;
-            closed = true;
-        }
-    }
-
-    protected void closeStatement(Statement statement) {
-        if (statement != null) {
-            try {
-                statement.close();
-            } catch (SQLException ignore) {
-            }
+    public void clearLocalCache() {
+        if (!closed) {
+            localCache.clear();
         }
     }
 
@@ -209,6 +181,37 @@ public abstract class BaseExecutor implements Executor {
             cacheKey.update(configuration.getEnvironment().getId());
         }
         return cacheKey;
+    }
+
+    @Override
+    public void setExecutorWrapper(Executor executor) {
+        this.wrapper = wrapper;
+    }
+
+    @Override
+    public void close(boolean forceRollback) {
+        try {
+            try {
+                rollback(forceRollback);
+            } finally {
+                transaction.close();
+            }
+        } catch (SQLException e) {
+            logger.warn("Unexpected exception on closing transaction.  Cause: " + e);
+        } finally {
+            transaction = null;
+            localCache = null;
+            closed = true;
+        }
+    }
+
+    protected void closeStatement(Statement statement) {
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (SQLException ignore) {
+            }
+        }
     }
 
 }

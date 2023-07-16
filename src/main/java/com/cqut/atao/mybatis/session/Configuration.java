@@ -1,9 +1,13 @@
 package com.cqut.atao.mybatis.session;
 
 import com.cqut.atao.mybatis.binding.MapperRegistry;
+import com.cqut.atao.mybatis.cache.Cache;
+import com.cqut.atao.mybatis.cache.decorators.FifoCache;
+import com.cqut.atao.mybatis.cache.impl.PerpetualCache;
 import com.cqut.atao.mybatis.datasource.druid.DruidDataSourceFactory;
 import com.cqut.atao.mybatis.datasource.pooled.PooledDataSourceFactory;
 import com.cqut.atao.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
+import com.cqut.atao.mybatis.executor.CachingExecutor;
 import com.cqut.atao.mybatis.executor.Executor;
 import com.cqut.atao.mybatis.executor.SimpleExecutor;
 import com.cqut.atao.mybatis.executor.keygen.KeyGenerator;
@@ -50,7 +54,13 @@ public class Configuration {
 
     protected LocalCacheScope localCacheScope = LocalCacheScope.SESSION;
 
+    // 默认启用缓存，cacheEnabled = true/false
+    protected boolean cacheEnabled = true;
+
     protected boolean useGeneratedKeys = false;
+
+    // 缓存,存在Map里
+    protected final Map<String, Cache> caches = new HashMap<>();
 
     // 映射注册机
     protected MapperRegistry mapperRegistry = new MapperRegistry(this);
@@ -85,6 +95,10 @@ public class Configuration {
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
+
+        typeAliasRegistry.registerAlias("PERPETUAL", PerpetualCache.class);
+        typeAliasRegistry.registerAlias("FIFO", FifoCache.class);
+
 
         languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
     }
@@ -140,7 +154,12 @@ public class Configuration {
      * 生产执行器
      */
     public Executor newExecutor(Transaction transaction) {
-        return new SimpleExecutor(this, transaction);
+        Executor executor = new SimpleExecutor(this, transaction);
+        // 配置开启缓存，创建 CachingExecutor(默认就是有缓存)装饰者模式
+        if (cacheEnabled) {
+            executor = new CachingExecutor(executor);
+        }
+        return executor;
     }
 
     /**
@@ -222,12 +241,29 @@ public class Configuration {
         interceptorChain.addInterceptor(interceptorInstance);
     }
 
+
+    public boolean isCacheEnabled() {
+        return cacheEnabled;
+    }
+
     public LocalCacheScope getLocalCacheScope() {
         return localCacheScope;
     }
 
     public void setLocalCacheScope(LocalCacheScope localCacheScope) {
         this.localCacheScope = localCacheScope;
+    }
+
+    public void setCacheEnabled(boolean cacheEnabled) {
+        this.cacheEnabled = cacheEnabled;
+    }
+
+    public void addCache(Cache cache) {
+        caches.put(cache.getId(), cache);
+    }
+
+    public Cache getCache(String id) {
+        return caches.get(id);
     }
 
 

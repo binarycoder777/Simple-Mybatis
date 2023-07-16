@@ -1,9 +1,13 @@
 package com.cqut.atao.mybatis.mapping;
 
+import com.cqut.atao.mybatis.cache.Cache;
+import com.cqut.atao.mybatis.executor.keygen.Jdbc3KeyGenerator;
 import com.cqut.atao.mybatis.executor.keygen.KeyGenerator;
+import com.cqut.atao.mybatis.executor.keygen.NoKeyGenerator;
 import com.cqut.atao.mybatis.scripting.LanguageDriver;
 import com.cqut.atao.mybatis.session.Configuration;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -31,6 +35,10 @@ public class MappedStatement {
 
     private boolean flushCacheRequired;
 
+    private Cache cache;
+    private boolean useCache;
+
+
     MappedStatement() {
         // constructor disabled
     }
@@ -57,12 +65,14 @@ public class MappedStatement {
             mappedStatement.sqlCommandType = sqlCommandType;
             mappedStatement.sqlSource = sqlSource;
             mappedStatement.resultType = resultType;
+            mappedStatement.keyGenerator = configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType) ? new Jdbc3KeyGenerator() : new NoKeyGenerator();
             mappedStatement.lang = configuration.getDefaultScriptingLanguageInstance();
         }
 
         public MappedStatement build() {
             assert mappedStatement.configuration != null;
             assert mappedStatement.id != null;
+            mappedStatement.resultMaps = Collections.unmodifiableList(mappedStatement.resultMaps);
             return mappedStatement;
         }
 
@@ -87,6 +97,21 @@ public class MappedStatement {
 
         public Builder keyProperty(String keyProperty) {
             mappedStatement.keyProperties = delimitedStringToArray(keyProperty);
+            return this;
+        }
+
+        public Builder cache(Cache cache) {
+            mappedStatement.cache = cache;
+            return this;
+        }
+
+        public Builder flushCacheRequired(boolean flushCacheRequired) {
+            mappedStatement.flushCacheRequired = flushCacheRequired;
+            return this;
+        }
+
+        public Builder useCache(boolean useCache) {
+            mappedStatement.useCache = useCache;
             return this;
         }
 
@@ -147,5 +172,13 @@ public class MappedStatement {
 
     public boolean isFlushCacheRequired() {
         return flushCacheRequired;
+    }
+
+    public boolean isUseCache() {
+        return useCache;
+    }
+
+    public Cache getCache() {
+        return cache;
     }
 }

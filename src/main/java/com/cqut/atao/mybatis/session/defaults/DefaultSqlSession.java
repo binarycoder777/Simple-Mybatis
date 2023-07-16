@@ -22,7 +22,6 @@ import java.util.List;
  */
 public class DefaultSqlSession implements SqlSession {
 
-
     private Logger logger = LoggerFactory.getLogger(DefaultSqlSession.class);
 
     private Configuration configuration;
@@ -67,7 +66,6 @@ public class DefaultSqlSession implements SqlSession {
         return update(statement, parameter);
     }
 
-
     @Override
     public int update(String statement, Object parameter) {
         MappedStatement ms = configuration.getMappedStatement(statement);
@@ -92,6 +90,16 @@ public class DefaultSqlSession implements SqlSession {
         }
     }
 
+    @Override
+    public void close() {
+        // isCommitOrRollbackRequired(false)
+        executor.close(false);
+    }
+
+    @Override
+    public void clearCache() {
+        executor.clearLocalCache();
+    }
 
     @Override
     public <T> T getMapper(Class<T> type) {
@@ -103,16 +111,4 @@ public class DefaultSqlSession implements SqlSession {
         return configuration;
     }
 
-
-    @Override
-    public void close() {
-        executor.close(true);
-    }
-
-    @Override
-    public void clearCache() {
-        executor.clearLocalCache();
-    }
-
 }
-
