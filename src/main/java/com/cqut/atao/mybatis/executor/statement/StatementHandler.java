@@ -1,7 +1,7 @@
 package com.cqut.atao.mybatis.executor.statement;
 
 
-
+import com.cqut.atao.mybatis.mapping.BoundSql;
 import com.cqut.atao.mybatis.session.ResultHandler;
 
 import java.sql.Connection;
@@ -36,5 +36,8 @@ public interface StatementHandler {
 
     /** 执行更新 */
     int update(Statement statement) throws SQLException;
+
+    /** 获取绑定SQL */
+    BoundSql getBoundSql();
 }
 
